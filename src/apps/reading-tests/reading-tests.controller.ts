@@ -8,35 +8,31 @@ import {
   Post,
   Query,
   UploadedFile,
-  UploadedFiles,
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
 import { ApiTags } from '@nestjs/swagger';
-import {
-  GetSuggetedProductDto,
-  SearchProductDto,
-  Pagination,
-} from './dto';
-import { ProductsService } from './products.service';
-import { Product } from './schemas';
+import { SearchReadingTestDto, CreateReadingTestDto } from './dto';
+import { ReadingTestsService } from './reading-tests.service';
+import { ReadingTest } from './schemas';
 import { diskStorage } from 'multer'
 import { extname } from 'path'
 import { AuthGuard } from '@nestjs/passport';
+import { Pagination } from '../utils';
 
 const multerOptions = {
   storage: diskStorage({
-    destination: './pictures/products'
-    , filename: (req, file, callback) => {
+    destination: './pictures/reading-test-thumbnails'
+    , filename: (_req, file, callback) => {
       // make a gud name :))
       const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E3)
-      const newFileName = `${req.body.name.replace(/\s/g, '_')}_${uniqueSuffix}${extname(file.originalname)}`
+      const newFileName = `${uniqueSuffix}${extname(file.originalname)}`
       //Calling the callback passing the random name generated with the original extension name
       callback(null, newFileName)
     }
   }),
-  fileFilter: (req, file, callback) => {
+  fileFilter: (_req, file, callback) => {
     if (file.mimetype == "image/png"
       || file.mimetype == "image/jpg"
       || file.mimetype == "image/jpeg"
@@ -52,40 +48,31 @@ const multerOptions = {
   }
 }
 
-@Controller('products')
-@ApiTags('products')
-export class ProductsController {
-  constructor(private readonly productsService: ProductsService) { }
+@Controller('reading-tests')
+@ApiTags('reading-tests')
+export class ReadingTestsController {
+  constructor(private readonly readingTestsService: ReadingTestsService) { }
 
   @Post()
   @UseGuards(AuthGuard("jwt"))
   @UseInterceptors(FileInterceptor('file', multerOptions))
   async create(
-    @UploadedFile() pictures: Express.Multer.File,
-    @Body() body,
-  ): Promise<Product> {
-    return this.productsService.create(body, pictures);
+    @UploadedFile() file: Express.Multer.File,
+    @Body() body: CreateReadingTestDto,
+  ): Promise<ReadingTest> {
+    return this.readingTestsService.createReadingTest(body, file);
   }
 
   @Get()
-  async searchProducts(
-    @Query() searchProductDto: SearchProductDto,
+  async searchReadingTests(
+    @Query() searchReadingTestDto: SearchReadingTestDto,
   ): Promise<Pagination> {
-    return this.productsService.searchProducts(searchProductDto);
+    return this.readingTestsService.searchReadingTests(searchReadingTestDto);
   }
 
-  @Get('detail/:id')
-  async getProductDetail(@Param('id') id: string): Promise<Product> {
-    return this.productsService.getProductDetail(id);
-  }
-
-  @Get('suggeted')
-  async getSuggetedProduct(
-    @Query() getSameProductDto: GetSuggetedProductDto,
-  ): Promise<Product[]> {
-    return this.productsService.getSameProductsBrandOrCategory(
-      getSameProductDto,
-    );
+  @Get(':id')
+  async getReadingTestDetail(@Param('id') id: string): Promise<ReadingTest> {
+    return this.readingTestsService.getReadingTestById(id);
   }
 
   @Patch(':id')
@@ -93,15 +80,15 @@ export class ProductsController {
   @UseInterceptors(FilesInterceptor('files', 5, multerOptions))
   async findByIdAndUpdate(
     @Param('id') id: string,
-    @UploadedFiles() files: Array<Express.Multer.File>,
+    @UploadedFile() file: Express.Multer.File,
     @Body() body,
   ) {
-    return this.productsService.findByIdAndUpdate(id, files, body);
+    return this.readingTestsService.findReadingTestByIdAndUpdate(id, file, body);
   }
 
   @Delete(':id')
   @UseGuards(AuthGuard("jwt"))
   async delete(@Param('id') id: string) {
-    return this.productsService.delete(id);
+    return this.readingTestsService.deleteReadingTestById(id);
   }
 }

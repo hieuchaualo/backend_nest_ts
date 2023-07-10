@@ -1,7 +1,6 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { Transform } from 'class-transformer';
 import {
-  IsMongoId,
   IsString,
   MaxLength,
   IsNotEmpty,
@@ -12,7 +11,7 @@ import {
   Min,
 } from 'class-validator';
 
-export class SearchProductDto {
+export class SearchReadingTestDto {
   @ApiPropertyOptional()
   @IsString()
   @IsNotEmpty()
@@ -20,16 +19,6 @@ export class SearchProductDto {
   @MaxLength(64)
   @IsOptional()
   readonly keywords: string;
-
-  @ApiPropertyOptional()
-  @IsMongoId()
-  @IsOptional()
-  readonly categoryId: string;
-
-  @ApiPropertyOptional()
-  @IsMongoId()
-  @IsOptional()
-  readonly brandId: string;
 
   @ApiPropertyOptional()
   @Transform(({ value }) => Number.parseInt(value))

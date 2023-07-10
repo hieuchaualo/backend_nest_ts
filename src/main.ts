@@ -22,8 +22,8 @@ async function bootstrap() {
   app.use(helmet({
     crossOriginResourcePolicy: false,
   }));
-  app.useGlobalFilters(new MongoExceptionFilter());
   app.useGlobalPipes(new ValidationPipe());
+  app.useGlobalFilters(new MongoExceptionFilter());
 
   // if you need prefix
   // app.setGlobalPrefix('api');
