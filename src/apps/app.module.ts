@@ -4,7 +4,7 @@ import { ServeStaticModule } from '@nestjs/serve-static';
 import { CoreModule } from '../core/core.module';
 import { MongooseModule } from '@nestjs/mongoose';
 import { AccountsModule } from './accounts/accounts.module';
-import { ReadingTestsModule } from './reading-tests/reading-tests.module';
+import { MiniTestsModule } from './mini-tests/mini-tests.module';
 import { join } from 'path';
 
 @Module({
@@ -17,7 +17,7 @@ import { join } from 'path';
     }),
     CoreModule,
     AccountsModule,
-    ReadingTestsModule,
+    MiniTestsModule,
   ],
 })
 export class AppModule {}

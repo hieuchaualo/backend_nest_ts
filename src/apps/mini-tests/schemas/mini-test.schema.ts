@@ -3,10 +3,10 @@ import { Document, SchemaTypes } from 'mongoose';
 import { Account } from 'src/apps/accounts/schemas/account.schema';
 import { Quiz } from './quiz.schema';
 
-export type ReadingTestDocument = ReadingTest & Document;
+export type MiniTestDocument = MiniTest & Document;
 
 @Schema({ timestamps: true })
-export class ReadingTest {
+export class MiniTest {
   @Prop({
     required: true,
     trim: true,
@@ -38,4 +38,4 @@ export class ReadingTest {
   creator: string | Account;
 }
 
-export const ReadingTestSchema = SchemaFactory.createForClass(ReadingTest);
+export const MiniTestSchema = SchemaFactory.createForClass(MiniTest);

@@ -37,6 +37,6 @@ async function bootstrap() {
   SwaggerModule.setup('docs', app, document);
 
   await app.listen(appConfig.port);
-  console.log(`View the API documentation at http://127.0.0.1:${appConfig.port}/docs`);
+  console.log(`View the API documentation at ${appConfig.appEndpoint}/docs`);
 }
 bootstrap();

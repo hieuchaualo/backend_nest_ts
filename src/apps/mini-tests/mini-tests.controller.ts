@@ -13,17 +13,17 @@ import {
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiTags } from '@nestjs/swagger';
-import { CreateReadingTestDto } from './dto';
-import { ReadingTestsService } from './reading-tests.service';
-import { ReadingTest } from './schemas';
+import { CreateMiniTestDto } from './dto';
+import { MiniTestsService } from './mini-tests.service';
+import { MiniTest } from './schemas';
 import { diskStorage } from 'multer'
 import { extname } from 'path'
 import { AuthGuard } from '@nestjs/passport';
-import { Pagination, SearchDto } from '../utils';
+import { Pagination, Role, Roles, SearchDto } from '../utils';
 
 const multerOptions = {
   storage: diskStorage({
-    destination: './pictures/reading-test-thumbnails'
+    destination: './pictures/mini-test-thumbnails'
     , filename: (_req, file, callback) => {
       // make a gud name :))
       const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E3)
@@ -48,47 +48,54 @@ const multerOptions = {
   }
 }
 
-@Controller('reading-tests')
-@ApiTags('reading-tests')
-export class ReadingTestsController {
-  constructor(private readonly readingTestsService: ReadingTestsService) { }
+@Controller('mini-tests')
+@ApiTags('mini-tests')
+export class MiniTestsController {
+  constructor(private readonly miniTestsService: MiniTestsService) { }
 
   @Post()
-  @UseGuards(AuthGuard("jwt"))
   @UseInterceptors(FileInterceptor('thumbnail', multerOptions))
   async create(
     @UploadedFile() file: Express.Multer.File,
-    @Body() body: CreateReadingTestDto,
-  ): Promise<ReadingTest> {
-    return this.readingTestsService.createReadingTest(body, file);
+    @Body() body: CreateMiniTestDto,
+  ): Promise<MiniTest> {
+    return this.miniTestsService.createMiniTest(body, file);
   }
 
   @Get()
-  async searchReadingTests(
-    @Query() searchReadingTestDto: SearchDto,
+  async searchMiniTests(
+    @Query() searchMiniTestDto: SearchDto,
   ): Promise<Pagination> {
-    return this.readingTestsService.searchReadingTests(searchReadingTestDto);
+    return this.miniTestsService.searchMiniTests(searchMiniTestDto);
   }
 
   @Get(':id')
-  async getReadingTest(@Param('id') id: string): Promise<ReadingTest> {
-    return this.readingTestsService.getReadingTestById(id);
+  async getMiniTest(@Param('id') id: string): Promise<MiniTest> {
+    return this.miniTestsService.getMiniTestById(id);
   }
 
   @Patch(':id')
-  @UseGuards(AuthGuard("jwt"))
   @UseInterceptors(FileInterceptor('thumbnail', multerOptions))
   async findByIdAndUpdate(
     @Param('id') id: string,
     @UploadedFile() file: Express.Multer.File,
     @Body() body,
   ) {
-    return this.readingTestsService.findReadingTestByIdAndUpdate(id, file, body);
+    return this.miniTestsService.findMiniTestByIdAndUpdate(id, file, body);
+  }
+
+  @Patch('no-thumbnail/:id')
+  @UseGuards(AuthGuard("jwt"))
+  async findByIdAndUpdateNoThumbnail(
+    @Param('id') id: string,
+    @Body() body,
+  ) {
+    return this.miniTestsService.findMiniTestByIdAndUpdateNoThumbnail(id, body);
   }
 
   @Delete(':id')
   @UseGuards(AuthGuard("jwt"))
   async delete(@Param('id') id: string) {
-    return this.readingTestsService.deleteReadingTestById(id);
+    return this.miniTestsService.deleteMiniTestById(id);
   }
 }
