@@ -1,5 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
+import { Role } from 'src/apps/utils';
 
 export type AccountDocument = Account & Document;
 
@@ -10,7 +11,7 @@ export class Account {
     minlength: 2,
     maxlength: 32,
   })
-  readonly name: string;
+  name: string;
 
   @Prop({
     trim: true,
@@ -20,14 +21,17 @@ export class Account {
     minlength: 8,
     maxlength: 64,
   })
-  readonly email: string;
+  email: string;
 
   @Prop({
     required: true,
     minlength: 8,
     maxlength: 64,
   })
-  readonly password: string;
+  password: string;
+
+  @Prop({ default: [Role.User] })
+  roles: Role[];
 }
 
 export const AccountSchema = SchemaFactory.createForClass(Account);

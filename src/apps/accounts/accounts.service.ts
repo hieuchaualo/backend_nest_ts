@@ -1,7 +1,7 @@
 import { HttpException, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { CreateAccountDto, UpdateAccountDto } from './dto';
+import { CreateAccountDto, RegisterAccountDto, UpdateForAccountDto } from './dto';
 import { Account, AccountDocument } from './schemas/account.schema';
 import * as bcrypt from 'bcrypt';
 import { LoginAccountDto } from './dto/login-account.dto';
@@ -21,7 +21,16 @@ export class AccountsService {
   }
 
   async checkByPayload(payload: any) {
-    return await this.accountModel.findOne({ email: payload.email });
+    console.log(payload)
+    return this.accountModel.findOne({ email: payload.email });
+  }
+
+  async register(registerAccountDto: RegisterAccountDto) {
+    const hashedPassword = await bcrypt.hash(registerAccountDto.password, SALT_OR_ROUNDS);
+    registerAccountDto.password = hashedPassword;
+    const registeredAccount = await this.accountModel.create(registerAccountDto);
+    const token = this.signToken(registeredAccount.email);
+    return { registeredAccount, token };
   }
 
   async create(createAccountDto: CreateAccountDto) {
@@ -32,41 +41,39 @@ export class AccountsService {
     return { createdAccount, token };
   }
 
-  async signin(loginAccountDto: LoginAccountDto) {
-    const account = await this.accountModel.findOne({ email: loginAccountDto.email });
+  async login(loginAccountDto: LoginAccountDto) {
+    const account = await this.accountModel.findOne({ email: loginAccountDto.email }).exec();
     if (!account) {
-      throw new HttpException('Unauthorized: Wrong email', 401);
+      throw new HttpException('Unauthorized: Wrong email or password', 401);
     }
     if (await bcrypt.compare(loginAccountDto.password, account.password)) {
       const token = this.signToken(account.email);
       return { account, token };
     } else {
-      throw new HttpException('Unauthorized: Wrong password', 401);
+      throw new HttpException('Unauthorized: Wrong email or password', 401);
     }
   }
 
-  async findAll(limit = 12): Promise<Account[]> {
-    const accounts = this.accountModel.find().limit(limit).exec();
-    return accounts;
+  async findAll(limit = '12'): Promise<Account[]> {
+    return this.accountModel.find().limit(Number(limit)).exec();
   }
 
   async findById(id: string): Promise<IAccount> {
-    const account = this.accountModel.findById(id).exec();
-    return account;
+    return this.accountModel.findById(id).exec();
   }
 
-  async findByIdAndUpdate(id: string, updateAccountDto: UpdateAccountDto): Promise<IAccount> {
+  async findByIdAndUpdate(updateAccountDto: UpdateForAccountDto): Promise<IAccount> {
     if (updateAccountDto.password) {
       const hashedPassword = await bcrypt.hash(updateAccountDto.password, SALT_OR_ROUNDS);
       updateAccountDto.password = hashedPassword;
     }
     const account = this.accountModel
-      .findByIdAndUpdate(id, updateAccountDto, { new: true }) // return updated doc
+      .findByIdAndUpdate(updateAccountDto._id, updateAccountDto, { new: true }) // return updated doc
       .exec();
     return account;
   }
 
-  async delete(id: string) {
+  async findByIdAndDelete(id: string) {
     const deletedAccount = await this.accountModel.findByIdAndDelete(id).exec();
     return deletedAccount;
   }

@@ -12,7 +12,7 @@ async function bootstrap() {
   // WARN: Chrome does support cross-origin requests from localhost.
   app.enableCors({
     origin: (origin, callback) => {
-      if (!origin || appConfig.crosOrigins.indexOf(origin) !== -1) {
+      if (!origin || appConfig.crossOrigins.indexOf(origin) !== -1) {
         callback(null, true)
       } else {
         callback(new Error(`${origin} has been blocked by CORS policy.`), false)
@@ -37,6 +37,6 @@ async function bootstrap() {
   SwaggerModule.setup('docs', app, document);
 
   await app.listen(appConfig.port);
-  console.log(`App's running on port ${appConfig.port}`);
+  console.log(`View the API documentation at ${appConfig.appEndpoint}/docs`);
 }
 bootstrap();

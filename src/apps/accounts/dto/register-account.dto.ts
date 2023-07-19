@@ -6,12 +6,10 @@ import {
   MaxLength,
   IsNotEmpty,
   IsOptional,
-  IsArray,
   IsMongoId,
 } from 'class-validator';
-import { Role } from 'src/apps/utils';
 
-export class CreateAccountDto {
+export class RegisterAccountDto {
   @ApiPropertyOptional()
   @IsMongoId()
   @IsOptional()
@@ -37,9 +35,4 @@ export class CreateAccountDto {
   @MinLength(8)
   @MaxLength(64)
   password: string;
-
-  @ApiPropertyOptional()
-  @IsArray({ each: true })
-  @IsOptional()
-  roles: [Role];
 }
