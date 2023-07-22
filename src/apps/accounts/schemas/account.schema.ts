@@ -13,6 +13,9 @@ export class Account {
   })
   name: string;
 
+  @Prop({ trim: true })
+  avatar: string;
+
   @Prop({
     trim: true,
     required: true,

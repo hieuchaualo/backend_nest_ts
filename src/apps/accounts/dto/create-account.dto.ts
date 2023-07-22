@@ -24,6 +24,13 @@ export class CreateAccountDto {
   @IsOptional()
   name: string;
 
+  @ApiPropertyOptional()
+  @IsString()
+  @MinLength(2)
+  @MaxLength(32)
+  @IsOptional()
+  avatar: string;
+
   @ApiProperty()
   @IsEmail()
   @IsNotEmpty()

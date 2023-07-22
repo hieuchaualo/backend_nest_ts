@@ -1,7 +1,7 @@
 import { HttpException, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { CreateAccountDto, RegisterAccountDto, UpdateForAccountDto } from './dto';
+import { CreateAccountDto, RegisterAccountDto, UpdateAccountDto, UpdateForAccountDto } from './dto';
 import { Account, AccountDocument } from './schemas/account.schema';
 import * as bcrypt from 'bcrypt';
 import { LoginAccountDto } from './dto/login-account.dto';
@@ -60,6 +60,18 @@ export class AccountsService {
 
   async findById(id: string): Promise<IAccount> {
     return this.accountModel.findById(id).exec();
+  }
+
+  async updateAvatar(
+    updateAccountDto: UpdateAccountDto,
+    file: Express.Multer.File,
+  ): Promise<IAccount> {
+    const avatarPath = `avatars/${file?.filename || 'default.png'}`;
+
+    const account = this.accountModel
+      .findByIdAndUpdate(updateAccountDto._id, { avatar: avatarPath }, { new: true }) // return updated doc
+      .exec();
+    return account;
   }
 
   async findByIdAndUpdate(updateAccountDto: UpdateForAccountDto): Promise<IAccount> {

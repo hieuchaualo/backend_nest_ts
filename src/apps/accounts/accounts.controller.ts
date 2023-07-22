@@ -7,7 +7,9 @@ import {
   Patch,
   Post,
   Request,
+  UploadedFile,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { ApiTags } from '@nestjs/swagger';
@@ -16,6 +18,36 @@ import { CreateAccountDto, RegisterAccountDto, UpdateAccountDto, UpdateForAccoun
 import { LoginAccountDto } from './dto/login-account.dto';
 import { IAccount } from './interfaces/account.interface';
 import { Role, Roles } from '../utils';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { diskStorage } from 'multer';
+import { extname } from 'path';
+
+const avatarMulterOptions = {
+  storage: diskStorage({
+    destination: './pictures/avatars'
+    , filename: (_req, file, callback) => {
+      // make a gud name :))
+      const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E3)
+      const newFileName = `${uniqueSuffix}${extname(file.originalname)}`
+      //Calling the callback passing the random name generated with the original extension name
+      callback(null, newFileName)
+    }
+  }),
+  fileFilter: (_req, file, callback) => {
+    if (file.mimetype == "image/png"
+      || file.mimetype == "image/jpg"
+      || file.mimetype == "image/jpeg"
+    ) {
+      callback(null, true)
+    } else {
+      console.error('Only .png, .jpg and .jpeg format allowed!')
+      callback(new Error('Only .png, .jpg and .jpeg format allowed!'), false)
+    }
+  },
+  limits: {
+    fileSize: (1024 * 1024) * 2, // 2MB
+  }
+}
 
 @Controller('accounts')
 @ApiTags('accounts')
@@ -46,9 +78,18 @@ export class AccountsController {
     return req.user
   }
 
+  @Patch('avatar')
+  @UseInterceptors(FileInterceptor('avatar', avatarMulterOptions))
+  async updateAvatar(
+    @Body() updateAccountDto: UpdateAccountDto,
+    @UploadedFile() file: Express.Multer.File,
+  ): Promise<IAccount> {
+    return this.accountsService.updateAvatar(updateAccountDto, file);
+  }
+
   @Patch()
   @UseGuards(AuthGuard("jwt"))
-  async updateMyInfo(
+  async updateAccountInfo(
     @Body() updateAccountDto: UpdateAccountDto,
   ): Promise<IAccount> {
     return this.accountsService.findByIdAndUpdate(updateAccountDto);
@@ -57,7 +98,7 @@ export class AccountsController {
   // ==========================================
   // REQUIRED ADMIN AUTHORIZATION
 
-  @Post('create')
+  @Post('managements/register')
   @UseGuards(AuthGuard("jwt"))
   @Roles(Role.Admin)
   async createAccount(@Body() createAccountDto: CreateAccountDto) {
@@ -65,21 +106,21 @@ export class AccountsController {
     return account;
   }
 
-  @Get(':id')
-  @UseGuards(AuthGuard("jwt"))
-  @Roles(Role.Admin)
-  getAccountById(@Param('id') id: string,) {
-    return this.accountsService.findById(id);
-  }
-
-  @Get(':all')
+  @Get('managements')
   @UseGuards(AuthGuard("jwt"))
   @Roles(Role.Admin)
   getAllAccounts(@Param('limit') limit: string,) {
     return this.accountsService.findAll(limit);
   }
 
-  @Patch(':id')
+  @Get('managements/:id')
+  @UseGuards(AuthGuard("jwt"))
+  @Roles(Role.Admin)
+  getAccountById(@Param('id') id: string,) {
+    return this.accountsService.findById(id);
+  }
+
+  @Patch('managements/:id')
   @UseGuards(AuthGuard("jwt"))
   @Roles(Role.Admin)
   async updateForAccount(
@@ -88,7 +129,7 @@ export class AccountsController {
     return this.accountsService.findByIdAndUpdate(updateForAccountDto);
   }
 
-  @Delete(':id')
+  @Delete('managements/:id')
   @UseGuards(AuthGuard("jwt"))
   @Roles(Role.Admin)
   async deleteAnAccount(@Param('id') id: string) {

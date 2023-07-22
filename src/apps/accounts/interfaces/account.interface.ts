@@ -5,6 +5,7 @@ export interface IAccount {
   name: string;
   email: string;
   roles: Role[];
+  avatar: string;
   createdAt?: string;
   updatedAt?: string;
   password?: string;
