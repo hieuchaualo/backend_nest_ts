@@ -20,6 +20,7 @@ export class MiniTestsService {
     file: Express.Multer.File,
   ): Promise<MiniTest> {
     const thumbnailPath = `mini-test-thumbnails/${file?.filename || 'default.png'}`;
+    console.log(createMiniTestDto)
     const newMiniTest = new this.miniTestModel(createMiniTestDto);
     newMiniTest.thumbnail = thumbnailPath;
     return await newMiniTest.save();
@@ -31,7 +32,11 @@ export class MiniTestsService {
     let page = searchMiniTestDto.page || 1;
     const limit = searchMiniTestDto.limit || 12;
     const keywords = searchMiniTestDto.keywords;
-    const filter = keywords ? { title: { $regex: keywords, $options: 'i' } } : {};
+    const option = searchMiniTestDto.option;
+    const filter = { title: { $regex: keywords, $options: 'i' }, typeOfQuiz: option };
+    if (!keywords) delete filter.title;
+    if (!option) delete filter.typeOfQuiz;
+
     const miniTestsCount = await this.miniTestModel
       .find(filter)
       .count()

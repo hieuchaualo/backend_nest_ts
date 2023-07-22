@@ -12,14 +12,14 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { CreateMiniTestDto } from './dto';
 import { MiniTestsService } from './mini-tests.service';
 import { MiniTest } from './schemas';
 import { diskStorage } from 'multer'
 import { extname } from 'path'
 import { AuthGuard } from '@nestjs/passport';
-import { Pagination, Role, Roles, SearchDto } from '../utils';
+import { Pagination, SearchDto } from '../utils';
 
 const multerOptions = {
   storage: diskStorage({

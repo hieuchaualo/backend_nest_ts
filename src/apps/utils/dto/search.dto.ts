@@ -21,6 +21,14 @@ export class SearchDto {
   readonly keywords: string;
 
   @ApiPropertyOptional()
+  @IsString()
+  @IsNotEmpty()
+  @MinLength(1)
+  @MaxLength(64)
+  @IsOptional()
+  readonly option: string;
+
+  @ApiPropertyOptional()
   @Transform(({ value }) => Number.parseInt(value))
   @IsNumber()
   @Min(1)

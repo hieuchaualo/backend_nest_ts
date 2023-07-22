@@ -6,8 +6,10 @@ import {
   IsMongoId,
   ValidateNested,
   IsOptional,
+  IsEnum,
 } from 'class-validator';
 import { QuizDto } from './quiz.dto';
+import { MiniTestTypes } from 'src/apps/utils';
 
 export class CreateMiniTestDto {
   @ApiProperty()
@@ -19,6 +21,11 @@ export class CreateMiniTestDto {
   @IsString()
   @IsNotEmpty()
   readonly content: string;
+
+  @ApiProperty()
+  @IsEnum(MiniTestTypes)
+  @IsNotEmpty()
+  readonly typeOfQuiz: string;
 
   @ApiProperty()
   @ValidateNested({ each: true })

@@ -19,6 +19,12 @@ export class MiniTest {
   })
   content: string;
 
+  @Prop({
+    required: true,
+    trim: true,
+  })
+  typeOfQuiz: string;
+
   @Prop([{
     type: Quiz,
     required: true,
