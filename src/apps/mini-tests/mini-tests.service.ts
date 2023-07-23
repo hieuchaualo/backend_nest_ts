@@ -20,7 +20,6 @@ export class MiniTestsService {
     file: Express.Multer.File,
   ): Promise<MiniTest> {
     const thumbnailPath = `mini-test-thumbnails/${file?.filename || 'default.png'}`;
-    console.log(createMiniTestDto)
     const newMiniTest = new this.miniTestModel(createMiniTestDto);
     newMiniTest.thumbnail = thumbnailPath;
     return await newMiniTest.save();
