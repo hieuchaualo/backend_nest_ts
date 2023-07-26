@@ -29,7 +29,7 @@ async function bootstrap() {
   // app.setGlobalPrefix('api');
 
   const config = new DocumentBuilder()
-    .setTitle('NestJS Server')
+    .setTitle('READING MASTER')
     .setDescription('The API documentation')
     .setVersion('0.0.1')
     .build();
