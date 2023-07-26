@@ -5,6 +5,7 @@ import { MiniTestTypes } from 'src/apps/utils';
 export interface IMiniTest {
   title: string;
   content: string;
+  timeLimit: number;
   typeOfQuiz: string | MiniTestTypes;
   quizzes:  [IQuiz] | [string];
   thumbnail: string;

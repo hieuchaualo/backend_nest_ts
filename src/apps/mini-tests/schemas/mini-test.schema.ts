@@ -23,6 +23,12 @@ export class MiniTest {
     required: true,
     trim: true,
   })
+  timeLimit: number;
+
+  @Prop({
+    required: true,
+    trim: true,
+  })
   typeOfQuiz: string;
 
   @Prop([{
