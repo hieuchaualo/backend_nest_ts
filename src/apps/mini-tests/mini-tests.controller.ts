@@ -7,6 +7,7 @@ import {
   Patch,
   Post,
   Query,
+  Request,
   UploadedFile,
   UseGuards,
   UseInterceptors,
@@ -19,7 +20,7 @@ import { MiniTest } from './schemas';
 import { diskStorage } from 'multer'
 import { extname } from 'path'
 import { AuthGuard } from '@nestjs/passport';
-import { Pagination, SearchDto } from '../utils';
+import { HasRoles, Pagination, Role, RolesGuard, SearchDto } from '../utils';
 
 const multerOptions = {
   storage: diskStorage({
@@ -85,17 +86,23 @@ export class MiniTestsController {
   }
 
   @Patch('no-thumbnail/:id')
-  @UseGuards(AuthGuard("jwt"))
+  @HasRoles(Role.Admin)
+  @UseGuards(AuthGuard("jwt"), RolesGuard)
   async findByIdAndUpdateNoThumbnail(
+    @Request() req: any,
     @Param('id') id: string,
-    @Body() body,
+    @Body() body: any,
   ) {
     return this.miniTestsService.findMiniTestByIdAndUpdateNoThumbnail(id, body);
   }
 
   @Delete(':id')
-  @UseGuards(AuthGuard("jwt"))
-  async delete(@Param('id') id: string) {
+  @HasRoles(Role.Admin)
+  @UseGuards(AuthGuard("jwt"), RolesGuard)
+  async delete(
+    @Request() req: any,
+    @Param('id') id: string,
+  ) {
     return this.miniTestsService.deleteMiniTestById(id);
   }
 }

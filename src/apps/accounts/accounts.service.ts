@@ -7,6 +7,7 @@ import * as bcrypt from 'bcrypt';
 import { LoginAccountDto } from './dto/login-account.dto';
 import { sign } from 'jsonwebtoken';
 import { IAccount } from './interfaces/account.interface';
+import { Pagination, SearchDto } from '../utils';
 const SALT_OR_ROUNDS = 10;
 
 @Injectable()
@@ -21,7 +22,6 @@ export class AccountsService {
   }
 
   async checkByPayload(payload: any) {
-    console.log(payload)
     return this.accountModel.findOne({ email: payload.email });
   }
 
@@ -54,8 +54,43 @@ export class AccountsService {
     }
   }
 
-  async findAll(limit = '12'): Promise<Account[]> {
-    return this.accountModel.find().limit(Number(limit)).exec();
+  async searchAccounts(searchMiniTestDto: SearchDto): Promise<Pagination> {
+    let page = searchMiniTestDto.page || 1;
+    const limit = searchMiniTestDto.limit || 12;
+    const keywords = searchMiniTestDto.keywords;
+    const option = searchMiniTestDto.option;
+    const filter = { title: { $regex: keywords, $options: 'i' }, roles: option };
+    if (!keywords) delete filter.title;
+    if (!option) delete filter.roles;
+
+
+    const accountsCount = await this.accountModel
+      .find(filter)
+      .count()
+      .exec();
+
+    if (accountsCount == 0) return new Pagination([], limit, 1, 1);
+    const totalPage = Math.ceil(accountsCount / limit);
+
+    if (totalPage < page) page = totalPage;
+
+    // pagination
+    const accounts = await this.accountModel
+      .find(filter)
+      .skip(limit * page - limit)
+      .limit(limit)
+      .select({
+        password: false,
+      })
+      .sort({ updatedAt: -1 })
+      .exec();
+
+    return new Pagination(
+      accounts,
+      limit,
+      page,
+      totalPage,
+    );
   }
 
   async findById(id: string): Promise<IAccount> {

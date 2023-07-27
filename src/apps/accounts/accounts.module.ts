@@ -4,18 +4,16 @@ import { Account, AccountSchema } from './schemas/account.schema';
 import { AccountsController } from './accounts.controller';
 import { AccountsService } from './accounts.service';
 import { JwtStrategy } from './jwt.strategy';
-import { APP_GUARD } from '@nestjs/core';
-import { RolesGuard } from '../utils';
 
 @Module({
   imports: [
     MongooseModule.forFeature([{ name: Account.name, schema: AccountSchema }]),
   ],
   controllers: [AccountsController],
-  providers: [AccountsService, JwtStrategy, {
-    provide: APP_GUARD,
-    useClass: RolesGuard,
-  },],
+  providers: [
+    AccountsService,
+    JwtStrategy,
+  ],
   exports: [AccountsService],
 })
-export class AccountsModule {}
+export class AccountsModule { }

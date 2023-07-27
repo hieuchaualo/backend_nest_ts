@@ -9,16 +9,17 @@ class AppConfig {
 
   @IsNotEmpty()
   dbUrl: string;
-  
+
   @IsNotEmpty()
   crossOrigins: string[];
 }
 
 const appConfig = new AppConfig();
+
 appConfig.port = process.env.PORT;
 appConfig.dbUrl = process.env.MONGODB_URL;
 appConfig.appEndpoint = process.env.SERVER_ENDPOINT;
-appConfig.crossOrigins = process.env.CORS_ORIGIN.split(',');
+appConfig.crossOrigins = process.env.CORS_ORIGIN?.split(',');
 
 (async () => {
   const errors = await validate(appConfig);
@@ -27,4 +28,4 @@ appConfig.crossOrigins = process.env.CORS_ORIGIN.split(',');
   }
 })();
 
-export default appConfig;
+export { appConfig };

@@ -1,14 +1,13 @@
 import { NestFactory } from '@nestjs/core';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { AppModule } from './apps/app.module';
-import appConfig from 'src/config/appConfig';
+import { appConfig } from 'src/config/appConfig';
 import { ValidationPipe } from '@nestjs/common';
 import { MongoExceptionFilter } from './common/filters';
 import helmet from 'helmet';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-
   // WARN: Chrome does support cross-origin requests from localhost.
   app.enableCors({
     origin: (origin, callback) => {

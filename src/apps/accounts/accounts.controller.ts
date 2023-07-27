@@ -6,6 +6,7 @@ import {
   Param,
   Patch,
   Post,
+  Query,
   Request,
   UploadedFile,
   UseGuards,
@@ -17,7 +18,7 @@ import { AccountsService } from './accounts.service';
 import { CreateAccountDto, RegisterAccountDto, UpdateAccountDto, UpdateForAccountDto } from './dto';
 import { LoginAccountDto } from './dto/login-account.dto';
 import { IAccount } from './interfaces/account.interface';
-import { Role, Roles } from '../utils';
+import { HasRoles, Pagination, Role, RolesGuard, SearchDto } from '../utils';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { extname } from 'path';
@@ -99,40 +100,50 @@ export class AccountsController {
   // REQUIRED ADMIN AUTHORIZATION
 
   @Post('managements/register')
-  @UseGuards(AuthGuard("jwt"))
-  @Roles(Role.Admin)
-  async createAccount(@Body() createAccountDto: CreateAccountDto) {
+  @HasRoles(Role.Admin)
+  @UseGuards(AuthGuard("jwt"), RolesGuard)
+  async createAccount(
+    @Request() req: any,
+    @Body() createAccountDto: CreateAccountDto,
+  ) {
     const account = await this.accountsService.create(createAccountDto);
     return account;
   }
 
   @Get('managements')
-  @UseGuards(AuthGuard("jwt"))
-  @Roles(Role.Admin)
-  getAllAccounts(@Param('limit') limit: string,) {
-    return this.accountsService.findAll(limit);
+  @HasRoles(Role.Admin)
+  @UseGuards(AuthGuard("jwt"), RolesGuard)
+  getAllAccounts(
+    @Request() req: any,
+    @Query() searchMiniTestDto: SearchDto,
+  ): Promise<Pagination> {
+    return this.accountsService.searchAccounts(searchMiniTestDto);
   }
 
   @Get('managements/:id')
-  @UseGuards(AuthGuard("jwt"))
-  @Roles(Role.Admin)
+  @HasRoles(Role.Admin)
+  @UseGuards(AuthGuard("jwt"), RolesGuard)
   getAccountById(@Param('id') id: string,) {
     return this.accountsService.findById(id);
   }
 
   @Patch('managements/:id')
-  @UseGuards(AuthGuard("jwt"))
-  @Roles(Role.Admin)
+  @HasRoles(Role.Admin)
+  @UseGuards(AuthGuard("jwt"), RolesGuard)
   async updateForAccount(
+    @Request() req: any,
     @Body() updateForAccountDto: UpdateForAccountDto,
   ): Promise<IAccount> {
     return this.accountsService.findByIdAndUpdate(updateForAccountDto);
   }
 
   @Delete('managements/:id')
-  @UseGuards(AuthGuard("jwt"))
-  @Roles(Role.Admin)
-  async deleteAnAccount(@Param('id') id: string) {
+  @HasRoles(Role.Admin)
+  @UseGuards(AuthGuard("jwt"), RolesGuard)
+  async deleteAnAccount(
+    @Request() req: any,
+    @Param('id') id: string,
+  ) {
     return this.accountsService.findByIdAndDelete(id);
   }
 }

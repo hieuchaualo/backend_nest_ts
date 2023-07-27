@@ -9,7 +9,9 @@ import { join } from 'path';
 
 @Module({
   imports: [
-    ConfigModule.forRoot({ cache: true }),
+    ConfigModule.forRoot({
+      cache: true,
+    }),
     MongooseModule.forRoot(process.env.MONGODB_URL),
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, '../..', 'pictures'),
@@ -20,4 +22,4 @@ import { join } from 'path';
     MiniTestsModule,
   ],
 })
-export class AppModule {}
+export class AppModule { }
