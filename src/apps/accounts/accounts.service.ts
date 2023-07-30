@@ -58,16 +58,14 @@ export class AccountsService {
     let page = searchMiniTestDto.page || 1;
     const limit = searchMiniTestDto.limit || 12;
     const keywords = searchMiniTestDto.keywords;
-    const option = searchMiniTestDto.option;
-    const filter = { title: { $regex: keywords, $options: 'i' }, roles: option };
+    const filter = { title: { $regex: keywords, $options: 'i' } };
     if (!keywords) delete filter.title;
-    if (!option) delete filter.roles;
 
+    let sortOptions: any = { createdAt: -1 }
+    const option = searchMiniTestDto.option;
+    if (option) sortOptions = { ...sortOptions, ...JSON.parse(searchMiniTestDto.option) }
 
-    const accountsCount = await this.accountModel
-      .find(filter)
-      .count()
-      .exec();
+    const accountsCount = await this.accountModel.find(filter).count().exec();
 
     if (accountsCount == 0) return new Pagination([], limit, 1, 1);
     const totalPage = Math.ceil(accountsCount / limit);
@@ -79,10 +77,8 @@ export class AccountsService {
       .find(filter)
       .skip(limit * page - limit)
       .limit(limit)
-      .select({
-        password: false,
-      })
-      .sort({ updatedAt: -1 })
+      .select({ password: false })
+      .sort(sortOptions)
       .exec();
 
     return new Pagination(
@@ -109,13 +105,13 @@ export class AccountsService {
     return account;
   }
 
-  async findByIdAndUpdate(updateAccountDto: UpdateForAccountDto): Promise<IAccount> {
+  async findByIdAndUpdate(id: string, updateAccountDto: UpdateForAccountDto): Promise<IAccount> {
     if (updateAccountDto.password) {
       const hashedPassword = await bcrypt.hash(updateAccountDto.password, SALT_OR_ROUNDS);
       updateAccountDto.password = hashedPassword;
     }
     const account = this.accountModel
-      .findByIdAndUpdate(updateAccountDto._id, updateAccountDto, { new: true }) // return updated doc
+      .findByIdAndUpdate(id, updateAccountDto, { new: true }) // return updated doc
       .exec();
     return account;
   }

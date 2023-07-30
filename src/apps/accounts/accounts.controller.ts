@@ -93,7 +93,7 @@ export class AccountsController {
   async updateAccountInfo(
     @Body() updateAccountDto: UpdateAccountDto,
   ): Promise<IAccount> {
-    return this.accountsService.findByIdAndUpdate(updateAccountDto);
+    return this.accountsService.findByIdAndUpdate(updateAccountDto._id, updateAccountDto);
   }
 
   // ==========================================
@@ -132,9 +132,10 @@ export class AccountsController {
   @UseGuards(AuthGuard("jwt"), RolesGuard)
   async updateForAccount(
     @Request() req: any,
+    @Param('id') id: string,
     @Body() updateForAccountDto: UpdateForAccountDto,
   ): Promise<IAccount> {
-    return this.accountsService.findByIdAndUpdate(updateForAccountDto);
+    return this.accountsService.findByIdAndUpdate(id, updateForAccountDto);
   }
 
   @Delete('managements/:id')

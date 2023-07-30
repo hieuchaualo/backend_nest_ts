@@ -46,7 +46,7 @@ export class CreateAccountDto {
   password: string;
 
   @ApiPropertyOptional()
-  @IsArray({ each: true })
+  @IsArray()
   @IsOptional()
   roles: [Role];
 }
