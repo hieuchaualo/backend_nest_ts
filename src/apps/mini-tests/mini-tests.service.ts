@@ -75,6 +75,26 @@ export class MiniTestsService {
     return miniTest;
   }
 
+  async getMiniTestRandom(): Promise<MiniTest[]> {
+    const random = Math.floor(Math.random() * 10);
+
+    const miniTestsCount = await this.miniTestModel
+      .find()
+      .count()
+      .exec();
+
+    const skip = (random > miniTestsCount) ? miniTestsCount : random;
+
+    const miniTest = this.miniTestModel
+      .find()
+      .skip(skip - 1)
+      .limit(1)
+      .select({ content: true })
+      .exec();
+
+    return miniTest;
+  }
+
   async findMiniTestByIdAndUpdate(
     id: string,
     file: Express.Multer.File,

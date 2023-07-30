@@ -70,6 +70,11 @@ export class MiniTestsController {
     return this.miniTestsService.searchMiniTests(searchMiniTestDto);
   }
 
+  @Get('random')
+  async getMiniTestRandom(): Promise<MiniTest[]> {
+    return this.miniTestsService.getMiniTestRandom();
+  }
+
   @Get(':id')
   async getMiniTest(@Param('id') id: string): Promise<MiniTest> {
     return this.miniTestsService.getMiniTestById(id);
