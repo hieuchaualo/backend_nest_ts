@@ -15,13 +15,14 @@ import {
 import { AuthGuard } from '@nestjs/passport';
 import { ApiTags } from '@nestjs/swagger';
 import { AccountsService } from './accounts.service';
-import { CreateAccountDto, RegisterAccountDto, UpdateAccountDto, UpdateForAccountDto } from './dto';
+import { CreateAccountDto, MiniTestHistoryDto, RegisterAccountDto, UpdateAccountDto, UpdateForAccountDto } from './dto';
 import { LoginAccountDto } from './dto/login-account.dto';
 import { IAccount } from './interfaces/account.interface';
 import { HasRoles, Pagination, Role, RolesGuard, SearchDto } from '../utils';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { extname } from 'path';
+import { IMiniTestHistory } from './interfaces';
 
 const avatarMulterOptions = {
   storage: diskStorage({
@@ -86,6 +87,23 @@ export class AccountsController {
     @UploadedFile() file: Express.Multer.File,
   ): Promise<IAccount> {
     return this.accountsService.updateAvatar(updateAccountDto, file);
+  }
+
+  @Get('mini-test-history')
+  @UseGuards(AuthGuard("jwt"))
+  async getMiniTestHistory(
+    @Request() req: any,
+  ): Promise<IMiniTestHistory[]> {
+    return this.accountsService.getMiniTestHistory(req.user._id);
+  }
+
+  @Patch('mini-test-history')
+  @UseGuards(AuthGuard("jwt"))
+  async updateMiniTestHistory(
+    @Request() req: any,
+    @Body() miniTestHistoryDto: MiniTestHistoryDto,
+  ): Promise<IAccount> {
+    return this.accountsService.updateMiniTestHistory(req.user._id.toString(), miniTestHistoryDto);
   }
 
   @Patch()

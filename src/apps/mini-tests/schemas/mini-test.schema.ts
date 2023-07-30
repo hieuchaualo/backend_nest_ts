@@ -1,6 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, SchemaTypes } from 'mongoose';
-import { Account } from 'src/apps/accounts/schemas/account.schema';
+import { Account } from '../../accounts/schemas/account.schema';
 import { Quiz } from './quiz.schema';
 
 export type MiniTestDocument = MiniTest & Document;

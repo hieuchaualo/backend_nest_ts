@@ -1,6 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
 import { Role } from 'src/apps/utils';
+import { MiniTestHistory } from "./mini-test-history.schema"
 
 export type AccountDocument = Account & Document;
 
@@ -35,6 +36,11 @@ export class Account {
 
   @Prop({ default: [Role.User] })
   roles: Role[];
+
+  @Prop([{
+    type: MiniTestHistory,
+  }])
+  miniTestHistory: MiniTestHistory[];
 }
 
 export const AccountSchema = SchemaFactory.createForClass(Account);

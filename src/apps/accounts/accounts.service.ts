@@ -1,13 +1,15 @@
 import { HttpException, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { CreateAccountDto, RegisterAccountDto, UpdateAccountDto, UpdateForAccountDto } from './dto';
+import { CreateAccountDto, MiniTestHistoryDto, RegisterAccountDto, UpdateAccountDto, UpdateForAccountDto } from './dto';
 import { Account, AccountDocument } from './schemas/account.schema';
 import * as bcrypt from 'bcrypt';
 import { LoginAccountDto } from './dto/login-account.dto';
 import { sign } from 'jsonwebtoken';
 import { IAccount } from './interfaces/account.interface';
 import { Pagination, SearchDto } from '../utils';
+import { IMiniTestHistory } from './interfaces';
+import { MiniTest } from '../mini-tests/schemas';
 const SALT_OR_ROUNDS = 10;
 
 @Injectable()
@@ -101,6 +103,35 @@ export class AccountsService {
 
     const account = this.accountModel
       .findByIdAndUpdate(updateAccountDto._id, { avatar: avatarPath }, { new: true }) // return updated doc
+      .exec();
+    return account;
+  }
+
+  async getMiniTestHistory(id: string): Promise<IMiniTestHistory[]> {
+    const account = await this.accountModel
+      .findById(id)
+      .populate({
+        path: "miniTestHistory",
+        populate: {
+          path: "miniTest",
+          model: MiniTest.name,
+          select: 'title',
+        }
+      })
+      .exec()
+    return account.miniTestHistory
+  }
+
+  async updateMiniTestHistory(
+    id: string,
+    miniTestHistoryDto: MiniTestHistoryDto,
+  ): Promise<IAccount> {
+    const account = this.accountModel
+      .findByIdAndUpdate(
+        id,
+        { $push: { miniTestHistory: miniTestHistoryDto } },
+        { new: true },
+      )
       .exec();
     return account;
   }

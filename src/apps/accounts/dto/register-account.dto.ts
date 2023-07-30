@@ -7,7 +7,9 @@ import {
   IsNotEmpty,
   IsOptional,
   IsMongoId,
+  IsArray,
 } from 'class-validator';
+import { MiniTestHistoryDto } from './mini-test-history.dto';
 
 export class RegisterAccountDto {
   @ApiPropertyOptional()
@@ -42,4 +44,9 @@ export class RegisterAccountDto {
   @MinLength(8)
   @MaxLength(64)
   password: string;
+
+  @ApiPropertyOptional()
+  @IsArray({ each: true })
+  @IsOptional()
+  miniTestHistory: [MiniTestHistoryDto];
 }

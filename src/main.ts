@@ -33,9 +33,9 @@ async function bootstrap() {
     .setVersion('0.0.1')
     .build();
   const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('docs', app, document);
+  SwaggerModule.setup('', app, document);
 
   await app.listen(appConfig.port);
-  console.log(`View the API documentation at ${appConfig.appEndpoint}/docs`);
+  console.log(`View the API documentation at ${appConfig.appEndpoint}`);
 }
 bootstrap();
