@@ -5,6 +5,7 @@ import { CoreModule } from '../core/core.module';
 import { MongooseModule } from '@nestjs/mongoose';
 import { AccountsModule } from './accounts/accounts.module';
 import { MiniTestsModule } from './mini-tests/mini-tests.module';
+import { ReadingTipsModule } from './reading-tips/reading-tips.module';
 import { join } from 'path';
 
 @Module({
@@ -20,6 +21,7 @@ import { join } from 'path';
     CoreModule,
     AccountsModule,
     MiniTestsModule,
+    ReadingTipsModule,
   ],
 })
 export class AppModule { }
