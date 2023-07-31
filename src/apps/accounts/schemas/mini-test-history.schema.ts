@@ -16,6 +16,11 @@ export class MiniTestHistory {
   @Prop({
     default: 0,
   })
+  timeLimit: number;
+
+  @Prop({
+    default: 0,
+  })
   timeTaken: number;
 
   @Prop({

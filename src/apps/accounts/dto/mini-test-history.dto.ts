@@ -16,6 +16,12 @@ export class MiniTestHistoryDto {
   @Transform(({ value }) => Number.parseInt(value))
   @IsNumber()
   @IsNotEmpty()
+  timeLimit: number;
+
+  @ApiProperty()
+  @Transform(({ value }) => Number.parseInt(value))
+  @IsNumber()
+  @IsNotEmpty()
   timeTaken: number;
 
   @ApiProperty()
