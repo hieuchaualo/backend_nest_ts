@@ -24,7 +24,7 @@ import { HasRoles, Pagination, Role, RolesGuard, SearchDto } from '../utils';
 
 const multerOptions = {
   storage: diskStorage({
-    destination: './pictures/mini-test-thumbnails'
+    destination: './pictures/reading-tip-thumbnails'
     , filename: (_req, file, callback) => {
       // make a gud name :))
       const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E3)

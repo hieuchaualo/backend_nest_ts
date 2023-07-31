@@ -19,7 +19,7 @@ export class ReadingTipsService {
     createReadingTipDto: CreateReadingTipDto,
     file: Express.Multer.File,
   ): Promise<ReadingTip> {
-    const thumbnailPath = `mini-test-thumbnails/${file?.filename || 'default.png'}`;
+    const thumbnailPath = `reading-tip-thumbnails/${file?.filename || 'default.png'}`;
     const newReadingTip = new this.miniTestModel(createReadingTipDto);
     newReadingTip.thumbnail = thumbnailPath;
     return await newReadingTip.save();
@@ -51,10 +51,7 @@ export class ReadingTipsService {
       .find(filter)
       .skip(limit * page - limit)
       .limit(limit)
-      .select({
-        content: false,
-        quizzes: false,
-      })
+      .select({ content: false })
       .populate('creator', 'name')
       .sort({ updatedAt: -1 })
       .exec();
@@ -83,7 +80,7 @@ export class ReadingTipsService {
     const miniTest = this.miniTestModel
       .findByIdAndUpdate(id, {
         ...updateReadingTipDto,
-        thumbnail: `mini-test-thumbnails/${file.filename}`,
+        thumbnail: `reading-tip-thumbnails/${file.filename}`,
       })
       .exec();
     return miniTest;
