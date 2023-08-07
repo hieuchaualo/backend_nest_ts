@@ -75,24 +75,15 @@ export class MiniTestsService {
     return miniTest;
   }
 
-  async getMiniTestRandom(): Promise<MiniTest[]> {
-    const random = Math.floor(Math.random() * 10);
-
-    const miniTestsCount = await this.miniTestModel
-      .find()
-      .count()
-      .exec();
-
-    const skip = (random > miniTestsCount) ? miniTestsCount : random;
-
-    const miniTest = this.miniTestModel
-      .find()
-      .skip(skip - 1)
+  async getNextMiniTestById(id: string): Promise<MiniTest[]> {
+    const miniTests = this.miniTestModel
+      .find({ _id: { $gt: id } })
+      .sort({ _id: 1 })
       .limit(1)
-      .select({ content: true })
+      .select({ _id: true })
       .exec();
 
-    return miniTest;
+    return miniTests;
   }
 
   async findMiniTestByIdAndUpdate(
