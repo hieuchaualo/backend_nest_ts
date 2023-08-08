@@ -106,7 +106,7 @@ export class MiniTestsService {
           select: 'title',
         }
       })
-      .sort({ 'miniTest.updatedAt': -1 })
+      .sort({ 'miniTestHistory.updatedAt': -1 })
       .exec()
     return account.miniTestHistory
   }

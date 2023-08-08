@@ -79,7 +79,7 @@ export class MiniTestsController {
     return this.miniTestsService.getNextMiniTestById(id);
   }
 
-  @Get('mini-test-history')
+  @Get('history')
   @UseGuards(AuthGuard("jwt"))
   async getMiniTestHistory(
     @Request() req: any,
@@ -87,7 +87,7 @@ export class MiniTestsController {
     return this.miniTestsService.getMiniTestHistory(req.user._id.toString());
   }
 
-  @Patch('mini-test-history')
+  @Patch('history')
   @UseGuards(AuthGuard("jwt"))
   async updateMiniTestHistory(
     @Request() req: any,
