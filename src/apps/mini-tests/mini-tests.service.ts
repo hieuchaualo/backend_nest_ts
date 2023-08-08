@@ -15,11 +15,11 @@ import { IAccount, IMiniTestHistory } from '../accounts/interfaces';
 export class MiniTestsService {
   constructor(
     @InjectModel(MiniTest.name)
-    private readonly accountModel: Model<AccountDocument>,
+    private readonly miniTestModel: Model<MiniTestDocument>,
   
     @InjectModel(Account.name)
-    private readonly miniTestModel: Model<MiniTestDocument>,
-  ) { }
+    private readonly accountModel: Model<AccountDocument>,
+    ) { }
 
   async createMiniTest(
     createMiniTestDto: CreateMiniTestDto,
