@@ -21,6 +21,8 @@ import { diskStorage } from 'multer'
 import { extname } from 'path'
 import { AuthGuard } from '@nestjs/passport';
 import { HasRoles, Pagination, Role, RolesGuard, SearchDto } from '../utils';
+import { IAccount, IMiniTestHistory } from '../accounts/interfaces';
+import { MiniTestHistoryDto } from '../accounts/dto';
 
 const multerOptions = {
   storage: diskStorage({
@@ -75,6 +77,23 @@ export class MiniTestsController {
     @Query('id') id: string,
   ): Promise<MiniTest[]> {
     return this.miniTestsService.getNextMiniTestById(id);
+  }
+
+  @Get('mini-test-history')
+  @UseGuards(AuthGuard("jwt"))
+  async getMiniTestHistory(
+    @Request() req: any,
+  ): Promise<IMiniTestHistory[]> {
+    return this.miniTestsService.getMiniTestHistory(req.user._id.toString());
+  }
+
+  @Patch('mini-test-history')
+  @UseGuards(AuthGuard("jwt"))
+  async updateMiniTestHistory(
+    @Request() req: any,
+    @Body() miniTestHistoryDto: MiniTestHistoryDto,
+  ): Promise<IAccount> {
+    return this.miniTestsService.updateMiniTestHistory(req.user._id.toString(), miniTestHistoryDto);
   }
 
   @Get(':id')

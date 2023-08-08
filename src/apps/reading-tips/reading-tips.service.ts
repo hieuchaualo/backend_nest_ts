@@ -12,7 +12,7 @@ import { Pagination, SearchDto } from '../utils';
 export class ReadingTipsService {
   constructor(
     @InjectModel(ReadingTip.name)
-    private readonly miniTestModel: Model<ReadingTipDocument>,
+    private readonly readingTipModel: Model<ReadingTipDocument>,
   ) { }
 
   async createReadingTip(
@@ -20,7 +20,7 @@ export class ReadingTipsService {
     file: Express.Multer.File,
   ): Promise<ReadingTip> {
     const thumbnailPath = `reading-tip-thumbnails/${file?.filename || 'default.png'}`;
-    const newReadingTip = new this.miniTestModel(createReadingTipDto);
+    const newReadingTip = new this.readingTipModel(createReadingTipDto);
     newReadingTip.thumbnail = thumbnailPath;
     return await newReadingTip.save();
   }
@@ -36,18 +36,18 @@ export class ReadingTipsService {
     if (!keywords) delete filter.title;
     if (!option) delete filter.typeOfQuiz;
 
-    const miniTestsCount = await this.miniTestModel
+    const readingTipsCount = await this.readingTipModel
       .find(filter)
       .count()
       .exec();
 
-    if (miniTestsCount == 0) return new Pagination([], limit, 1, 1);
-    const totalPage = Math.ceil(miniTestsCount / limit);
+    if (readingTipsCount == 0) return new Pagination([], limit, 1, 1);
+    const totalPage = Math.ceil(readingTipsCount / limit);
 
     if (totalPage < page) page = totalPage;
 
     // pagination
-    const miniTests = await this.miniTestModel
+    const readingTips = await this.readingTipModel
       .find(filter)
       .skip(limit * page - limit)
       .limit(limit)
@@ -57,7 +57,7 @@ export class ReadingTipsService {
       .exec();
 
     return new Pagination(
-      miniTests,
+      readingTips,
       limit,
       page,
       totalPage,
@@ -65,11 +65,11 @@ export class ReadingTipsService {
   }
 
   async getReadingTipById(id: string): Promise<ReadingTip> {
-    const miniTest = this.miniTestModel
+    const readingTip = this.readingTipModel
       .findById(id)
       .populate('creator', 'name')
       .exec();
-    return miniTest;
+    return readingTip;
   }
 
   async findReadingTipByIdAndUpdate(
@@ -77,27 +77,27 @@ export class ReadingTipsService {
     file: Express.Multer.File,
     updateReadingTipDto: UpdateReadingTipDto,
   ) {
-    const miniTest = this.miniTestModel
+    const readingTip = this.readingTipModel
       .findByIdAndUpdate(id, {
         ...updateReadingTipDto,
         thumbnail: `reading-tip-thumbnails/${file.filename}`,
       })
       .exec();
-    return miniTest;
+    return readingTip;
   }
 
   async findReadingTipByIdAndUpdateNoThumbnail(
     id: string,
     updateReadingTipDto: UpdateReadingTipDto,
   ) {
-    const miniTest = this.miniTestModel
+    const readingTip = this.readingTipModel
       .findByIdAndUpdate(id, updateReadingTipDto)
       .exec();
-    return miniTest;
+    return readingTip;
   }
 
   async deleteReadingTipById(id: string) {
-    const deletedReadingTip = this.miniTestModel
+    const deletedReadingTip = this.readingTipModel
       .findByIdAndDelete(id)
       .exec();
     return deletedReadingTip;

@@ -5,13 +5,19 @@ import {
   CreateMiniTestDto,
   UpdateMiniTestDto,
 } from './dto';
+import { Account, AccountDocument } from '../accounts/schemas';
 import { MiniTest, MiniTestDocument } from './schemas';
 import { Pagination, SearchDto } from '../utils';
+import { MiniTestHistoryDto } from '../accounts/dto';
+import { IAccount, IMiniTestHistory } from '../accounts/interfaces';
 
 @Injectable()
 export class MiniTestsService {
   constructor(
     @InjectModel(MiniTest.name)
+    private readonly accountModel: Model<AccountDocument>,
+  
+    @InjectModel(Account.name)
     private readonly miniTestModel: Model<MiniTestDocument>,
   ) { }
 
@@ -78,12 +84,45 @@ export class MiniTestsService {
   async getNextMiniTestById(id: string): Promise<MiniTest[]> {
     const miniTests = this.miniTestModel
       .find({ _id: { $gt: id } })
-      .sort({ _id: 1 })
+      .sort({ _id: -1 })
       .limit(1)
       .select({ _id: true })
       .exec();
 
     return miniTests;
+  }
+
+  async getMiniTestHistory(
+    accountId: string,
+  ): Promise<IMiniTestHistory[]> {
+
+    const account = await this.accountModel
+      .findById(accountId)
+      .populate({
+        path: "miniTestHistory",
+        populate: {
+          path: "miniTest",
+          model: MiniTest.name,
+          select: 'title',
+        }
+      })
+      .sort({ 'miniTest.updatedAt': -1 })
+      .exec()
+    return account.miniTestHistory
+  }
+
+  async updateMiniTestHistory(
+    id: string,
+    miniTestHistoryDto: MiniTestHistoryDto,
+  ): Promise<IAccount> {
+    const account = this.accountModel
+      .findByIdAndUpdate(
+        id,
+        { $push: { miniTestHistory: miniTestHistoryDto } },
+        { new: true },
+      )
+      .exec();
+    return account;
   }
 
   async findMiniTestByIdAndUpdate(
