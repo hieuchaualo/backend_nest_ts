@@ -29,6 +29,10 @@ export class AccountsService {
   async register(registerAccountDto: RegisterAccountDto) {
     const hashedPassword = await bcrypt.hash(registerAccountDto.password, SALT_OR_ROUNDS);
     registerAccountDto.password = hashedPassword;
+
+    const avatarPath = `avatars/default.png`;
+    registerAccountDto.avatar = avatarPath;
+
     const registeredAccount = await this.accountModel.create(registerAccountDto);
     const token = this.signToken(registeredAccount.email);
     return { registeredAccount, token };
@@ -37,6 +41,10 @@ export class AccountsService {
   async create(createAccountDto: CreateAccountDto) {
     const hashedPassword = await bcrypt.hash(createAccountDto.password, SALT_OR_ROUNDS);
     createAccountDto.password = hashedPassword;
+
+    const avatarPath = `avatars/default.png`;
+    createAccountDto.avatar = avatarPath;
+
     const createdAccount = await this.accountModel.create(createAccountDto);
     const token = this.signToken(createdAccount.email);
     return { createdAccount, token };
