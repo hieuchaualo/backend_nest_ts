@@ -16,10 +16,10 @@ export class MiniTestsService {
   constructor(
     @InjectModel(MiniTest.name)
     private readonly miniTestModel: Model<MiniTestDocument>,
-  
+
     @InjectModel(Account.name)
     private readonly accountModel: Model<AccountDocument>,
-    ) { }
+  ) { }
 
   async createMiniTest(
     createMiniTestDto: CreateMiniTestDto,
@@ -121,6 +121,13 @@ export class MiniTestsService {
         { $push: { miniTestHistory: miniTestHistoryDto } },
         { new: true },
       )
+      .exec();
+    return account;
+  }
+
+  async resetMiniTestHistory(id: string): Promise<IAccount> {
+    const account = this.accountModel
+      .findByIdAndUpdate(id, { $et: { miniTestHistory: [] } })
       .exec();
     return account;
   }

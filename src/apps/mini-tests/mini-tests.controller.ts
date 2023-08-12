@@ -96,6 +96,12 @@ export class MiniTestsController {
     return this.miniTestsService.updateMiniTestHistory(req.user._id.toString(), miniTestHistoryDto);
   }
 
+  @Delete('history')
+  @UseGuards(AuthGuard("jwt"))
+  async resetMiniTestHistory(@Request() req: any): Promise<IAccount> {
+    return this.miniTestsService.resetMiniTestHistory(req.user._id.toString());
+  }
+
   @Get(':id')
   async getMiniTest(@Param('id') id: string): Promise<MiniTest> {
     return this.miniTestsService.getMiniTestById(id);
