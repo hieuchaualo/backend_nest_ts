@@ -70,6 +70,21 @@ export class ReadingTipsController {
     return this.readingTipsService.searchReadingTips(searchReadingTipDto);
   }
 
+
+  @Get('next')
+  async getNextReadingTip(
+    @Query('id') id: string,
+  ): Promise<ReadingTip[]> {
+    return this.readingTipsService.getNextReadingTipById(id);
+  }
+
+  @Get('previous')
+  async getPreviousReadingTip(
+    @Query('id') id: string,
+  ): Promise<ReadingTip[]> {
+    return this.readingTipsService.getPreviousReadingTipById(id);
+  }
+
   @Get(':id')
   async getReadingTip(@Param('id') id: string): Promise<ReadingTip> {
     return this.readingTipsService.getReadingTipById(id);

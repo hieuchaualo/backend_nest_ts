@@ -82,8 +82,9 @@ export class MiniTestsService {
   }
 
   async getNextMiniTestById(id: string): Promise<MiniTest[]> {
+    const currentMiniTest = await this.miniTestModel.findById(id).exec();
     const miniTests = this.miniTestModel
-      .find({ _id: { $gt: id } })
+      .find({ _id: { $lt: id }, typeOfQuiz: currentMiniTest.typeOfQuiz })
       .sort({ _id: -1 })
       .limit(1)
       .select({ _id: true })

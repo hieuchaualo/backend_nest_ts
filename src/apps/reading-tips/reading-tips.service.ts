@@ -22,7 +22,7 @@ export class ReadingTipsService {
     const thumbnailPath = `reading-tip-thumbnails/${file?.filename || 'default.png'}`;
     const newReadingTip = new this.readingTipModel(createReadingTipDto);
     newReadingTip.thumbnail = thumbnailPath;
-    return await newReadingTip.save();
+    return newReadingTip.save();
   }
 
   async searchReadingTips(
@@ -70,6 +70,28 @@ export class ReadingTipsService {
       .populate('creator', 'name')
       .exec();
     return readingTip;
+  }
+
+  async getNextReadingTipById(id: string): Promise<ReadingTip[]> {
+    const miniTests = this.readingTipModel
+      .find({ _id: { $lt: id } })
+      .sort({ _id: -1 })
+      .limit(1)
+      .select({ _id: true })
+      .exec();
+
+    return miniTests;
+  }
+
+  async getPreviousReadingTipById(id: string): Promise<ReadingTip[]> {
+    const miniTests = this.readingTipModel
+      .find({ _id: { $gt: id } })
+      .sort({ _id: -1 })
+      .limit(1)
+      .select({ _id: true })
+      .exec();
+
+    return miniTests;
   }
 
   async findReadingTipByIdAndUpdate(
