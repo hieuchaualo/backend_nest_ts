@@ -128,7 +128,7 @@ export class MiniTestsService {
 
   async resetMiniTestHistory(id: string): Promise<IAccount> {
     const account = this.accountModel
-      .findByIdAndUpdate(id, { $et: { miniTestHistory: [] } })
+      .findByIdAndUpdate(id, { $set: { miniTestHistory: [] } })
       .exec();
     return account;
   }
